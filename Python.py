@@ -11,31 +11,41 @@ import json
 import threading
 import numpy as np
 import random
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import numpy as np
+import random
+import threading
+import paho.mqtt.client as mqtt
 
-print(random.random())
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests
+CORS(app)
 
-# MQTT broker details
+# ✅ เพิ่มตัวแปรเก็บข้อมูลเสียง
+audio_data = {"amplitude": [], "time": []}
+
+# ✅ `/audio` รองรับทั้ง `GET` และ `POST`
+@app.route('/audio', methods=['GET', 'POST'])
+def audio():
+    if request.method == 'GET':
+        return jsonify(audio_data)  # ส่งข้อมูลเสียงที่มีอยู่กลับไป
+
+    elif request.method == 'POST':
+        data = request.json
+        if "amplitude" in data and "time" in data:
+            audio_data["amplitude"] = data["amplitude"]
+            audio_data["time"] = data["time"]
+            return jsonify({"message": "Data received"}), 200
+        else:
+            return jsonify({"error": "Invalid data"}), 400
+
+# ✅ MQTT ตั้งค่าเหมือนเดิม
 broker = "mqtt.eclipseprojects.io"
-
 port = 1883
 
-@app.route('/audio', methods=['GET'])
-def generate_sine_wave():
-    frequency = random.randint(10000, 15000)  # Hz
-    duration = 10   # seconds
-    sample_rate = 100  # samples per second
-
-    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-    sine_wave = (100 * np.sin(2 * np.pi * frequency * t)).tolist()
-
-    return jsonify({"time": t.tolist(), "amplitude": sine_wave})
-# Callback when a message is received
 def on_message(client, userdata, msg):
-    print(f"Received message===================================: {msg.payload} on topic {msg.topic}")
+    print(f"Received message: {msg.payload} on topic {msg.topic}")
 
-# Callback when connected to the broker
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connected to MQTT broker")
@@ -43,18 +53,18 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("test/topicTar/temp")
     else:
         print(f"Connection failed with code {rc}")
+
 def mqtt_thread():
-    # Create MQTT client
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
-
-    # Connect to broker
     print("Connecting to broker...")
     client.connect(broker, port)
     client.loop_forever()
 
 mqtt_thread = threading.Thread(target=mqtt_thread)
 mqtt_thread.start()
+
+# ✅ แก้ไขให้ API ใช้งานได้จาก ESP32
 if __name__ == '__main__':
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
