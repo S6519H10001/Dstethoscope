@@ -67,4 +67,6 @@ mqtt_thread.start()
 
 # ✅ แก้ไขให้ API ใช้งานได้จาก ESP32
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    from waitress import serve  # ใช้ waitress แทน werkzeug
+    print("🚀 Running API in Production Mode...")
+    serve(app, host="0.0.0.0", port=5000)
