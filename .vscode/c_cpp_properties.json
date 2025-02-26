@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "ESP32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Users/HP/Documents/Arduino/libraries/**",
+                "C:/Users/HP/.platformio/packages/framework-arduinoespressif32/**",
+                "C:/Users/HP/.platformio/packages/framework-arduinoespressif32/libraries/**",
+                "C:/Users/HP/AppData/Local/Arduino15/packages/esp32/hardware/esp32/**"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "forcedInclude": [],
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerPath": "C:/Users/HP/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2405/bin/xtensa-esp32-elf-gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
