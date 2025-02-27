@@ -23,4 +23,4 @@ def handle_audio(data):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))  # ✅ ใช้พอร์ตจาก Render
     print(f"🚀 Running WebSocket Server on port {port}...")
-    socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, host="0.0.0.0", port=5000, certfile="cert.pem", keyfile="key.pem")
