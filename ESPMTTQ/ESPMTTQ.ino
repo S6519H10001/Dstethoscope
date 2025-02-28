@@ -8,8 +8,12 @@
 // **ตั้งค่าจอ OLED 0.9 นิ้ว (I2C)**
 #define OLED_SDA 40
 #define OLED_SCL 41
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, OLED_SCL, OLED_SDA);
-
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(
+    U8G2_R0, 
+    /* clock=*/ OLED_SCL, 
+    /* data=*/ OLED_SDA, 
+    /* reset=*/ U8X8_PIN_NONE  // เปลี่ยนตำแหน่ง reset ไปอยู่ท้ายสุด
+);
 // **ตั้งค่าขา I2S สำหรับ INMP441**
 #define I2S_WS  21
 #define I2S_SCK 48
@@ -104,7 +108,7 @@ void compute_fft_and_send() {
 
     // แปลง PCM เป็น float และใช้ Log Scaling
     for (int i = 0; i < FFT_SIZE; i++) {
-        real[i] = log10(abs(buffer[i]) + 1);
+       real[i] = log10((double)abs(buffer[i]) + 1); // แปลง buffer[i] เป็น double ก่อนใช้ log10()
         imag[i] = 0;
     }
 
@@ -116,7 +120,7 @@ void compute_fft_and_send() {
     // ใช้ G.711 บีบอัดข้อมูลก่อนส่งให้ AI
     uint8_t compressed_fft[FFT_SIZE / 2];  
     for (int i = 0; i < FFT_SIZE / 2; i++) {
-        compressed_fft[i] = real[i] > 0 ? log10(real[i]) * 10 : 0;
+        compressed_fft[i] = real[i] > 0 ? log10((double)real[i]) * 10 : 0; // แปลง real[i] เป็น double
     }
     client.publish(mqtt_topic, compressed_fft, sizeof(compressed_fft));
 
