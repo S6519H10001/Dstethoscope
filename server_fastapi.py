@@ -24,22 +24,6 @@ if os.path.exists(AUDIO_FILE):
 async def root():
     return {"message": "FastAPI is running!"}
 
-# ✅ WebSocket สำหรับ Text Message
-@app.websocket("/ws")
-async def websocket_text(websocket: WebSocket):
-    await websocket.accept()
-    print("✅ WebSocket Text Connected")
-
-    try:
-        while True:
-            data = await websocket.receive_text()
-            print(f"📩 Received: {data}")
-            await websocket.send_text(f"Echo: {data}")
-    except Exception as e:
-        print(f"❌ WebSocket Text Error: {e}")
-    finally:
-        print("❌ WebSocket Text Disconnected")
-
 # ✅ WebSocket สำหรับ Audio Streaming
 @app.websocket("/audio")
 async def websocket_audio(websocket: WebSocket):
@@ -57,7 +41,6 @@ async def websocket_audio(websocket: WebSocket):
                     data = await websocket.receive_bytes()
                     wav_file.writeframes(data)
                     print(f"🎧 Received {len(data)} bytes of audio")
-
                 except asyncio.CancelledError:
                     print("❌ WebSocket Cancelled")
                     break
