@@ -32,8 +32,8 @@ async def websocket_audio(websocket: WebSocket):
 
     try:
         with wave.open(AUDIO_FILE, "wb") as wav_file:
-            wav_file.setnchannels(2)
-            wav_file.setsampwidth(4)  # 32-bit PCM
+            wav_file.setnchannels(1)  # ✅ ใช้ Mono
+            wav_file.setsampwidth(2)  # ✅ ใช้ 16-bit PCM
             wav_file.setframerate(16000)
 
             while True:
@@ -57,4 +57,4 @@ async def websocket_audio(websocket: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)  # ✅ เปลี่ยนเป็นพอร์ต 8000
